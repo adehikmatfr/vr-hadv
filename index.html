@@ -3,11 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>VR Home Adventure</title>
+  <title>Camera Walking Control</title>
   <!-- A-Frame Library -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-  <!-- AR.js Library -->
-  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
   <style>
     body, html {
       margin: 0;
@@ -23,39 +21,75 @@
       height: 100%;
       display: block;
     }
-
-    video {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
   </style>
 </head>
 <body>
   <!-- A-Frame Scene -->
-  <a-scene arjs>
+  <a-scene>
     <!-- 3D Model -->
     <a-entity 
       gltf-model="./model/scene.gltf"
-      position="-3 -90 -140" 
-      scale="40 45 40"
+      position="0 -1 -5" 
+      scale="2 2 2"
       rotation="0 180 0">
     </a-entity>
 
-    <!-- Wrapper for Camera and Movement -->
-    <a-entity id="cameraRig" position="0 5 20" wasd-controls="acceleration: 50;">
+    <!-- Camera Rig -->
+    <a-entity id="cameraRig" position="0 1.6 0">
       <!-- Camera -->
       <a-entity 
         camera 
-        fov="75" 
-        near="0.1" 
-        far="1000" 
         look-controls>
       </a-entity>
     </a-entity>
   </a-scene>
+
+  <script>
+    // Get the camera rig
+    const cameraRig = document.querySelector('#cameraRig');
+
+    // Movement speed
+    const speed = 0.1;
+
+    // Helper function to calculate forward direction
+    function getForwardDirection() {
+      const rotation = cameraRig.object3D.rotation;
+      const vector = new THREE.Vector3(0, 0, -1); // Default forward vector
+      vector.applyEuler(rotation); // Apply camera rotation
+      return vector;
+    }
+
+    // Listen for keyboard events
+    window.addEventListener('keydown', (event) => {
+      const position = cameraRig.object3D.position;
+      const forward = getForwardDirection(); // Get current forward direction
+
+      switch (event.key) {
+        case 'w': // Move forward
+          position.x += forward.x * speed;
+          position.z += forward.z * speed;
+          break;
+        case 's': // Move backward
+          position.x -= forward.x * speed;
+          position.z -= forward.z * speed;
+          break;
+        case 'a': // Move left
+          position.x -= forward.z * speed; // Perpendicular to forward direction
+          position.z += forward.x * speed;
+          break;
+        case 'd': // Move right
+          position.x += forward.z * speed; // Perpendicular to forward direction
+          position.z -= forward.x * speed;
+          break;
+      }
+    });
+
+    // Log the camera rig's position for debugging
+    cameraRig.addEventListener('componentchanged', (event) => {
+      if (event.detail.name === 'position') {
+        console.log('Camera Rig Position:', cameraRig.getAttribute('position'));
+      }
+    });
+  </script>
 </body>
 </html>
