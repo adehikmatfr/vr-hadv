@@ -2,91 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>VR Home Adventure</title>
   <!-- A-Frame Library -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <!-- AR.js Library -->
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
-  <!-- Joystick Component -->
-  <script src="https://cdn.jsdelivr.net/npm/aframe-joystick-component@1.0.0/dist/aframe-joystick-component.min.js"></script>
   <style>
-    body {
+    body, html {
       margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
       font-family: Arial, sans-serif;
     }
-    .joystick-container {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      z-index: 10;
-      width: 120px;
-      height: 120px;
+
+    a-scene {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
-    .instruction {
+
+    video {
       position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 10;
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      padding: 10px;
-      border-radius: 5px;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
   </style>
 </head>
 <body>
-  <!-- Instruction Box -->
-  <div class="instruction">Use the joystick to move and touch to look around.</div>
-
-  <!-- Joystick Container -->
-  <div class="joystick-container">
-    <a-joystick id="joystick"></a-joystick>
-  </div>
-
   <!-- A-Frame Scene -->
-  <a-scene embedded arjs>
+  <a-scene arjs>
     <!-- 3D Model -->
     <a-entity 
       gltf-model="./model/scene.gltf"
-      position="0 -15 -30" 
-      scale="6 6 6"
+      position="-3 -90 -140" 
+      scale="40 45 40"
       rotation="0 180 0">
     </a-entity>
 
     <!-- Wrapper for Camera and Movement -->
-    <a-entity id="cameraRig" position="0 1.6 0">
+    <a-entity id="cameraRig" position="0 5 20">
       <!-- Camera -->
       <a-entity 
         camera 
+        fov="75" 
+        near="0.1" 
+        far="1000" 
         look-controls>
       </a-entity>
     </a-entity>
   </a-scene>
-
-  <script>
-    // Joystick Movement Integration
-    const cameraRig = document.querySelector('#cameraRig');
-    const joystick = document.querySelector('#joystick');
-
-    // Handle joystick movement
-    joystick.addEventListener('joystickmoved', (event) => {
-      const { x, y } = event.detail;
-      const position = cameraRig.getAttribute('position');
-
-      // Update position based on joystick direction
-      position.x += x * 0.1; // Adjust X position (left/right)
-      position.z += y * 0.1; // Adjust Z position (forward/backward)
-      cameraRig.setAttribute('position', position);
-    });
-
-    // Log camera position on joystick movement
-    cameraRig.addEventListener('componentchanged', function (event) {
-      if (event.detail.name === 'position') {
-        console.log('Camera moved to:', cameraRig.getAttribute('position'));
-      }
-    });
-  </script>
 </body>
 </html>
